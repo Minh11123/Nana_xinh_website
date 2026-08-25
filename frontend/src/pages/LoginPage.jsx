@@ -9,11 +9,13 @@ const defaultCredentials = {
 }
 
 export function LoginPage() {
-  const { isAuthenticated, isLoading, login, role } = useAuth()
+  const { forgotPassword, isAuthenticated, isLoading, login, role } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [credentials, setCredentials] = useState(defaultCredentials)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [isForgotMode, setIsForgotMode] = useState(false)
 
   const from = location.state?.from?.pathname || '/admin'
 
@@ -31,12 +33,19 @@ export function LoginPage() {
   async function handleSubmit(event) {
     event.preventDefault()
     setError('')
+    setNotice('')
 
     try {
+      if (isForgotMode) {
+        const response = await forgotPassword(credentials.email)
+        setNotice(response.resetUrl || response.message)
+        return
+      }
+
       const session = await login(credentials)
       navigate(session.user.role === 'ADMIN' ? from : '/', { replace: true })
-    } catch (loginError) {
-      setError(loginError.message)
+    } catch (submitError) {
+      setError(submitError.message)
     }
   }
 
@@ -45,9 +54,11 @@ export function LoginPage() {
       <section className="auth-panel">
         <div>
           <p className="eyebrow">Nana Xinh Admin</p>
-          <h1>Đăng nhập quản trị</h1>
+          <h1>{isForgotMode ? 'Quên mật khẩu' : 'Đăng nhập quản trị'}</h1>
           <p className="auth-copy">
-            Tài khoản có role ADMIN sẽ được chuyển thẳng vào dashboard quản trị.
+            {isForgotMode
+              ? 'Nhập email quản trị để tạo yêu cầu đặt lại mật khẩu.'
+              : 'Tài khoản có role ADMIN sẽ được chuyển thẳng vào dashboard quản trị.'}
           </p>
         </div>
 
@@ -66,28 +77,48 @@ export function LoginPage() {
               />
             </span>
           </label>
-          <label>
-            Mật khẩu
-            <span>
-              <LockKeyhole size={18} />
-              <input
-                autoComplete="current-password"
-                name="password"
-                type="password"
-                value={credentials.password}
-                onChange={updateField}
-                required
-              />
-            </span>
-          </label>
+
+          {!isForgotMode ? (
+            <label>
+              Mật khẩu
+              <span>
+                <LockKeyhole size={18} />
+                <input
+                  autoComplete="current-password"
+                  name="password"
+                  type="password"
+                  value={credentials.password}
+                  onChange={updateField}
+                  required
+                />
+              </span>
+            </label>
+          ) : null}
 
           {error ? <p className="form-error">{error}</p> : null}
+          {notice ? <p className="form-success">{notice}</p> : null}
 
           <button className="primary-button" disabled={isLoading} type="submit">
             <LogIn size={18} />
-            {isLoading ? 'Đang đăng nhập...' : 'Vào dashboard'}
+            {isLoading
+              ? 'Đang xử lý...'
+              : isForgotMode
+                ? 'Gửi yêu cầu'
+                : 'Vào dashboard'}
           </button>
         </form>
+
+        <button
+          className="text-button"
+          type="button"
+          onClick={() => {
+            setError('')
+            setNotice('')
+            setIsForgotMode((current) => !current)
+          }}
+        >
+          {isForgotMode ? 'Quay lại đăng nhập' : 'Quên mật khẩu?'}
+        </button>
       </section>
     </div>
   )

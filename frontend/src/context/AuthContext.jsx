@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { authApi } from '../api/auth.js'
 import { AuthContext } from './authContext.js'
 
@@ -30,22 +30,34 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
+    if (session?.token) {
+      authApi.logout(session.token).catch(() => {})
+    }
+
     setSession(null)
     localStorage.removeItem(STORAGE_KEY)
   }
 
-  const value = useMemo(
-    () => ({
-      isAuthenticated: Boolean(session?.user),
-      isLoading,
-      login,
-      logout,
-      role: session?.user?.role || null,
-      token: session?.token || null,
-      user: session?.user || null,
-    }),
-    [isLoading, session],
-  )
+  async function forgotPassword(email) {
+    setIsLoading(true)
+
+    try {
+      return await authApi.forgotPassword(email)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const value = {
+    isAuthenticated: Boolean(session?.user),
+    isLoading,
+    login,
+    logout,
+    forgotPassword,
+    role: session?.user?.role || null,
+    token: session?.token || null,
+    user: session?.user || null,
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

@@ -770,6 +770,26 @@ th {
   padding: 10px 12px;
 }
 
+.form-success {
+  margin: 0;
+  overflow-wrap: anywhere;
+  border-radius: 8px;
+  background: #eaf6ee;
+  color: #176b4d;
+  font-weight: 750;
+  padding: 10px 12px;
+}
+
+.text-button {
+  width: fit-content;
+  border: 0;
+  background: transparent;
+  color: #a02f58;
+  cursor: pointer;
+  font-weight: 850;
+  padding: 0;
+}
+
 .admin-dashboard {
   display: grid;
   min-height: 100vh;

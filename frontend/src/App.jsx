@@ -10,6 +10,7 @@ import { HomePage } from './pages/HomePage.jsx'
 import { LoginPage } from './pages/LoginPage.jsx'
 import { ProductDetailPage } from './pages/ProductDetailPage.jsx'
 import { ProductsPage } from './pages/ProductsPage.jsx'
+import { ResetPasswordPage } from './pages/ResetPasswordPage.jsx'
 import './App.css'
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route
               path="/admin"
               element={
