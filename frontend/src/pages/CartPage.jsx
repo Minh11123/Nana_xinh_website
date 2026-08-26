@@ -58,7 +58,7 @@ export function CartPage() {
           <p><span>Sản phẩm</span><strong>{formatCurrency(subtotal)}</strong></p>
           <p><span>Phí giao</span><strong>{shippingFee ? formatCurrency(shippingFee) : 'Miễn phí'}</strong></p>
           <p className="summary-total"><span>Tổng</span><strong>{formatCurrency(total)}</strong></p>
-          <Link className="primary-button" to="/checkout">Đặt hàng</Link>
+          <Link className="primary-button" to="/checkout">Gửi đơn qua Zalo</Link>
         </aside>
       </section>
     </div>

@@ -1,23 +1,34 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { orderApi } from '../api/orders.js'
 import { useCart } from '../context/cartContext.js'
+import { store } from '../data/store.js'
 import { formatCurrency } from '../utils/currency.js'
 
 const initialForm = {
   fullName: '',
   phone: '',
-  email: '',
   address: '',
   deliveryDate: '',
   deliveryTimeSlot: '09:00 - 11:00',
   note: '',
 }
 
+const FREE_CARD_WORDS = 30
+const LONG_CARD_FEE = 10000
+
+function countWords(value) {
+  const trimmedValue = value.trim()
+  return trimmedValue ? trimmedValue.split(/\s+/u).length : 0
+}
+
 export function CheckoutPage() {
   const cart = useCart()
   const [form, setForm] = useState(initialForm)
   const [status, setStatus] = useState('idle')
+  const cardWordCount = countWords(form.note)
+  const hasLongCardFee = cardWordCount > FREE_CARD_WORDS
+  const cardFee = hasLongCardFee ? LONG_CARD_FEE : 0
+  const orderTotal = cart.total + cardFee
 
   function updateField(event) {
     setForm((current) => ({
@@ -26,31 +37,41 @@ export function CheckoutPage() {
     }))
   }
 
+  function buildOrderMessage() {
+    const productLines = cart.items.map((item) => {
+      const price = item.product.salePrice || item.product.price
+      return `- ${item.product.name} x${item.quantity}: ${formatCurrency(price * item.quantity)}`
+    })
+
+    return [
+      `ĐƠN HOA - ${store.name}`,
+      ...productLines,
+      `Phí giao dự kiến: ${cart.shippingFee ? formatCurrency(cart.shippingFee) : 'Miễn phí'}`,
+      `Phí nội dung thiệp: ${cardFee ? formatCurrency(cardFee) : 'Miễn phí'}`,
+      `Tổng dự kiến: ${formatCurrency(orderTotal)}`,
+      '',
+      `Khách hàng: ${form.fullName}`,
+      `Số điện thoại: ${form.phone}`,
+      `Địa chỉ: ${form.address}`,
+      `Thời gian giao: ${form.deliveryDate}, ${form.deliveryTimeSlot}`,
+      `Lời nhắn: ${form.note || 'Không có'}`,
+    ].join('\n')
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
-    setStatus('submitting')
-
-    const payload = {
-      ...form,
-      items: cart.items.map((item) => ({
-        productId: item.product.id,
-        quantity: item.quantity,
-      })),
-    }
+    const message = buildOrderMessage()
+    window.open(store.zaloUrl, '_blank', 'noopener,noreferrer')
 
     try {
-      await orderApi.create(payload)
-      cart.clearCart()
-      setForm(initialForm)
-      setStatus('success')
+      await navigator.clipboard.writeText(message)
+      setStatus('copied')
     } catch {
-      cart.clearCart()
-      setForm(initialForm)
-      setStatus('mock-success')
+      setStatus('copy-failed')
     }
   }
 
-  if (cart.items.length === 0 && status !== 'success' && status !== 'mock-success') {
+  if (cart.items.length === 0) {
     return (
       <div className="page-container page-stack empty-state">
         <h1>Chưa có hoa để đặt</h1>
@@ -69,9 +90,14 @@ export function CheckoutPage() {
         </div>
       </div>
 
-      {(status === 'success' || status === 'mock-success') && (
+      {status === 'copied' && (
         <div className="notice">
-          Đơn hàng đã được ghi nhận. Khi backend chạy, dữ liệu sẽ được lưu vào PostgreSQL.
+          Đã sao chép nội dung đơn. Hãy dán vào Zalo để tiệm xác nhận mẫu và phí giao.
+        </div>
+      )}
+      {status === 'copy-failed' && (
+        <div className="notice warning">
+          Zalo đã được mở. Trình duyệt không cho tự sao chép, bạn hãy chụp màn hình đơn này để gửi tiệm.
         </div>
       )}
 
@@ -82,9 +108,6 @@ export function CheckoutPage() {
           </label>
           <label>Số điện thoại
             <input name="phone" required value={form.phone} onChange={updateField} />
-          </label>
-          <label>Email
-            <input name="email" type="email" value={form.email} onChange={updateField} />
           </label>
           <label>Địa chỉ giao
             <input name="address" required value={form.address} onChange={updateField} />
@@ -99,8 +122,17 @@ export function CheckoutPage() {
               <option>17:00 - 19:00</option>
             </select>
           </label>
-          <label className="full-span">Lời nhắn
+          <label className={`full-span card-message-field${hasLongCardFee ? ' is-over-limit' : ''}`}>
+            <span className="card-message-heading">
+              <span>Nội dung thiệp (Nếu có)</span>
+              <strong>{cardWordCount}/{FREE_CARD_WORDS} chữ</strong>
+            </span>
             <textarea name="note" rows="4" value={form.note} onChange={updateField} />
+            <small>
+              {hasLongCardFee
+                ? `Nội dung trên ${FREE_CARD_WORDS} chữ — phụ thu ${formatCurrency(LONG_CARD_FEE)}`
+                : `Miễn phí tối đa ${FREE_CARD_WORDS} chữ.`}
+            </small>
           </label>
         </div>
 
@@ -113,10 +145,17 @@ export function CheckoutPage() {
             </p>
           ))}
           <p><span>Phí giao</span><strong>{cart.shippingFee ? formatCurrency(cart.shippingFee) : 'Miễn phí'}</strong></p>
-          <p className="summary-total"><span>Tổng</span><strong>{formatCurrency(cart.total)}</strong></p>
-          <button className="primary-button" disabled={status === 'submitting'} type="submit">
-            {status === 'submitting' ? 'Đang gửi...' : 'Xác nhận đặt hoa'}
+          {hasLongCardFee && (
+            <p className="card-fee-row">
+              <span>Phụ thu thiệp trên {FREE_CARD_WORDS} chữ</span>
+              <strong>{formatCurrency(cardFee)}</strong>
+            </p>
+          )}
+          <p className="summary-total"><span>Tổng</span><strong>{formatCurrency(orderTotal)}</strong></p>
+          <button className="primary-button" type="submit">
+            Sao chép đơn & mở Zalo
           </button>
+          <small className="checkout-note">Website không lưu thông tin của bạn. Đơn chỉ được xác nhận sau khi tiệm phản hồi qua Zalo.</small>
         </aside>
       </form>
     </div>

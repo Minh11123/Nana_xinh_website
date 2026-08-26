@@ -1,4 +1,8 @@
-export const categories = [
+import { toDisplayImageUrl } from '../utils/driveImage.js'
+
+// Cập nhật catalog tại đây. imageUrl nhận cả đường dẫn local và link chia sẻ Google Drive.
+// Ví dụ Drive: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+const categoryData = [
   {
     id: 1,
     name: 'Bó hoa tốt nghiệp',
@@ -29,7 +33,7 @@ export const categories = [
   },
 ]
 
-export const products = [
+const productData = [
   {
     id: 101,
     categoryId: 1,
@@ -39,10 +43,8 @@ export const products = [
     price: 320000,
     salePrice: 289000,
     imageUrl: '/images/product-sunshine.jpg',
-    description:
-      'Bó hướng dương phối baby trắng, giấy kraft kem và nơ satin. Phù hợp tặng bạn bè trong lễ tốt nghiệp.',
+    description: 'Bó hướng dương phối baby trắng, giấy kraft kem và nơ satin.',
     featured: true,
-    stockQuantity: 18,
   },
   {
     id: 102,
@@ -53,10 +55,8 @@ export const products = [
     price: 280000,
     salePrice: 249000,
     imageUrl: '/images/product-baby-pink.jpg',
-    description:
-      'Baby trắng mix hồng pastel, bó tròn nhỏ xinh, nhẹ tay và lên hình mềm mại.',
+    description: 'Baby trắng mix hồng pastel, bó tròn nhỏ xinh và lên hình mềm mại.',
     featured: true,
-    stockQuantity: 24,
   },
   {
     id: 103,
@@ -67,10 +67,8 @@ export const products = [
     price: 430000,
     salePrice: 389000,
     imageUrl: '/images/product-dau-ngot.jpg',
-    description:
-      'Hoa hồng dâu phối cát tường trắng, hợp sinh nhật, kỷ niệm và những lời chúc dịu dàng.',
+    description: 'Hoa hồng dâu phối cát tường trắng, hợp sinh nhật và kỷ niệm.',
     featured: true,
-    stockQuantity: 12,
   },
   {
     id: 104,
@@ -81,10 +79,8 @@ export const products = [
     price: 520000,
     salePrice: 479000,
     imageUrl: '/images/product-cam-tu-cau.jpg',
-    description:
-      'Cẩm tú cầu xanh nhạt, hồng kem và lá bạc. Tổng thể thanh lịch, sang nhưng vẫn tươi trẻ.',
+    description: 'Cẩm tú cầu xanh nhạt, hồng kem và lá bạc, thanh lịch và tươi trẻ.',
     featured: true,
-    stockQuantity: 9,
   },
   {
     id: 105,
@@ -95,10 +91,8 @@ export const products = [
     price: 950000,
     salePrice: 890000,
     imageUrl: '/images/product-opening.jpg',
-    description:
-      'Giỏ hoa khai trương tone cam vàng, phối lan và đồng tiền, mang cảm giác may mắn và sung túc.',
+    description: 'Giỏ hoa khai trương tone cam vàng, phối lan và đồng tiền.',
     featured: false,
-    stockQuantity: 6,
   },
   {
     id: 106,
@@ -109,28 +103,15 @@ export const products = [
     price: 600000,
     salePrice: null,
     imageUrl: '/images/product-custom.jpg',
-    description:
-      'Thiết kế theo ngân sách và tone màu yêu thích. Nana Xinh tư vấn mẫu trước khi bó.',
+    description: 'Thiết kế theo ngân sách và tone màu yêu thích, tư vấn mẫu trước khi bó.',
     featured: false,
-    stockQuantity: 20,
   },
 ]
 
-export const orders = [
-  {
-    id: 5001,
-    customerName: 'Minh Anh',
-    phone: '036 8222 065',
-    total: 578000,
-    status: 'NEW',
-    createdAt: '2026-08-25T09:30:00',
-  },
-  {
-    id: 5002,
-    customerName: 'Hoàng Nam',
-    phone: '090 1234 567',
-    total: 890000,
-    status: 'CONFIRMED',
-    createdAt: '2026-08-24T16:10:00',
-  },
-]
+const withDisplayImage = (item) => ({
+  ...item,
+  imageUrl: toDisplayImageUrl(item.imageUrl),
+})
+
+export const categories = categoryData.map(withDisplayImage)
+export const products = productData.map(withDisplayImage)

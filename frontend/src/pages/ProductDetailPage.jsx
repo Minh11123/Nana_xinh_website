@@ -1,20 +1,17 @@
 import { ArrowLeft, Check, ShoppingBag } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { productApi } from '../api/products.js'
 import { useCart } from '../context/cartContext.js'
+import { useCatalog } from '../context/catalogContext.js'
 import { formatCurrency } from '../utils/currency.js'
 
 export function ProductDetailPage() {
   const { slug } = useParams()
   const navigate = useNavigate()
   const { addItem } = useCart()
-  const [product, setProduct] = useState(null)
+  const { products } = useCatalog()
+  const product = products.find((item) => item.slug === slug)
   const [quantity, setQuantity] = useState(1)
-
-  useEffect(() => {
-    productApi.getBySlug(slug).then(setProduct)
-  }, [slug])
 
   if (!product) {
     return <div className="page-container page-stack">Không tìm thấy sản phẩm.</div>

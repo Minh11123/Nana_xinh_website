@@ -1,12 +1,10 @@
-import { Home, LayoutDashboard, ShoppingBag, Store, UserRound } from 'lucide-react'
+import { Home, MessageCircle, ShoppingBag, Store } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
-import { useAuth } from '../context/authContext.js'
 import { useCart } from '../context/cartContext.js'
+import { store } from '../data/store.js'
 
 export function MobileBottomNav() {
   const { totalItems } = useCart()
-  const { role } = useAuth()
-
   return (
     <nav className="mobile-bottom-nav" aria-label="Điều hướng mobile">
       <NavLink to="/">
@@ -21,17 +19,10 @@ export function MobileBottomNav() {
         <ShoppingBag size={20} />
         <span>Giỏ ({totalItems})</span>
       </NavLink>
-      {role === 'ADMIN' ? (
-        <NavLink to="/admin">
-          <LayoutDashboard size={20} />
-          <span>Admin</span>
-        </NavLink>
-      ) : (
-        <NavLink to="/login">
-          <UserRound size={20} />
-          <span>Login</span>
-        </NavLink>
-      )}
+      <a href={store.zaloUrl} target="_blank" rel="noreferrer">
+        <MessageCircle size={20} />
+        <span>Zalo</span>
+      </a>
     </nav>
   )
 }

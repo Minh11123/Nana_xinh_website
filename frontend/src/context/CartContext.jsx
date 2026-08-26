@@ -1,8 +1,22 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CartContext } from './cartContext.js'
 
+const STORAGE_KEY = 'nana-xinh-cart'
+
+function readStoredCart() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
+  } catch {
+    return []
+  }
+}
+
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState(readStoredCart)
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+  }, [items])
 
   function addItem(product, quantity = 1) {
     setItems((currentItems) => {

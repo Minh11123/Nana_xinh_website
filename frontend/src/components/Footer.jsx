@@ -1,4 +1,5 @@
 import { Flower2, MapPin, Phone, Share2 } from 'lucide-react'
+import { store } from '../data/store.js'
 
 export function Footer() {
   return (
@@ -10,13 +11,13 @@ export function Footer() {
         </div>
         <div>
           <h3>Liên hệ</h3>
-          <p><Phone size={16} /> 036 8222 065</p>
-          <p><MapPin size={16} /> Hà Nội, Việt Nam</p>
+          <p><Phone size={16} /> {store.phoneDisplay}</p>
+          <p><MapPin size={16} /> {store.location}</p>
         </div>
         <div>
           <h3>Theo dõi</h3>
           <p><Share2 size={16} /> Tiệm hoa Nana Xinh</p>
-          <p><Flower2 size={16} /> @nanaxinh.flowers</p>
+          <p><Flower2 size={16} /> {store.socialHandle}</p>
         </div>
       </div>
     </footer>

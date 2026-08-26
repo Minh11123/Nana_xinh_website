@@ -1,16 +1,37 @@
-# React + Vite
+# Nana Xinh — frontend-only
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Website bán hoa chạy hoàn toàn ở frontend (React + Vite). Không cần backend, database hay tài khoản admin.
 
-Currently, two official plugins are available:
+## Cập nhật sản phẩm và ảnh
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Toàn bộ danh mục/sản phẩm nằm trong `src/data/catalog.js`.
 
-## React Compiler
+1. Tải ảnh lên Google Drive.
+2. Chọn **Chia sẻ → Quyền truy cập chung → Bất kỳ ai có đường liên kết**.
+3. Sao chép link dạng `https://drive.google.com/file/d/FILE_ID/view?usp=sharing`.
+4. Dán link vào trường `imageUrl` của sản phẩm hoặc danh mục.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Website tự chuyển link chia sẻ Drive thành link hiển thị ảnh. Có thể tiếp tục dùng ảnh trong `public/images` bằng đường dẫn `/images/ten-anh.jpg`.
 
-## Expanding the Oxlint configuration
+Thông tin cửa hàng/Zalo nằm trong `src/data/store.js`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Trang quản trị ẩn
+
+Mở `/nana-xinh-quan-ly` để thêm sản phẩm và banner quảng cáo cuộn bằng link ảnh Google Drive. Route này không xuất hiện trên menu. Nội dung thêm từ trang quản trị được lưu trong `localStorage`, nên chỉ hiển thị trên đúng trình duyệt/thiết bị đã thêm và không đồng bộ cho khách ở thiết bị khác.
+
+## Đặt hàng
+
+Giỏ hoa được lưu bằng `localStorage` trên trình duyệt. Trang đặt hàng tạo nội dung đơn, sao chép vào clipboard và mở Zalo để khách gửi trực tiếp cho tiệm. Website không thu thập hoặc lưu thông tin khách hàng.
+
+## Chạy dự án
+
+```bash
+npm install
+npm run dev
+```
+
+Kiểm tra bản production:
+
+```bash
+npm run build
+```

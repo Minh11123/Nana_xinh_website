@@ -1,5 +1,6 @@
 import { ArrowRight, MessageCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { store } from '../data/store.js'
 
 export function Hero() {
   return (
@@ -16,8 +17,8 @@ export function Hero() {
           <Link className="primary-button" to="/products">
             Xem mẫu hoa <ArrowRight size={18} />
           </Link>
-          <a className="secondary-button" href="tel:0368222065">
-            <MessageCircle size={18} /> Zalo 036 8222 065
+          <a className="secondary-button" href={store.zaloUrl} target="_blank" rel="noreferrer">
+            <MessageCircle size={18} /> Zalo {store.phoneDisplay}
           </a>
         </div>
       </div>

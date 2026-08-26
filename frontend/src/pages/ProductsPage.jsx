@@ -1,31 +1,22 @@
-import { SlidersHorizontal } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ProductList } from '../components/ProductList.jsx'
-import { categoryApi, productApi } from '../api/products.js'
+import { useCatalog } from '../context/catalogContext.js'
 
 export function ProductsPage() {
+  const { categories, products } = useCatalog()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [categories, setCategories] = useState([])
-  const [products, setProducts] = useState([])
   const activeFilterRef = useRef(null)
   const currentCategory = searchParams.get('category') || 'all'
 
-  useEffect(() => {
-    Promise.all([categoryApi.list(), productApi.list()]).then(([nextCategories, nextProducts]) => {
-      setCategories(nextCategories)
-      setProducts(nextProducts)
-    })
-  }, [])
-
-  const filteredProducts = useMemo(() => {
+  const filteredProducts = (() => {
     if (currentCategory === 'all') {
       return products
     }
 
     const category = categories.find((item) => item.slug === currentCategory)
     return products.filter((product) => product.categoryId === category?.id)
-  }, [categories, currentCategory, products])
+  })()
 
   useEffect(() => {
     activeFilterRef.current?.scrollIntoView({
@@ -33,7 +24,7 @@ export function ProductsPage() {
       block: 'nearest',
       inline: 'center',
     })
-  }, [categories, currentCategory])
+  }, [currentCategory])
 
   return (
     <div className="page-container page-stack products-page">
@@ -42,9 +33,6 @@ export function ProductsPage() {
           <p className="eyebrow">Nana Xinh shop</p>
           <h1>Tất cả sản phẩm</h1>
         </div>
-        <button className="secondary-button compact" type="button">
-          <SlidersHorizontal size={18} /> Bộ lọc
-        </button>
       </div>
 
       <div className="filter-pills" aria-label="Lọc theo danh mục">
