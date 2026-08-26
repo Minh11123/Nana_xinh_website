@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { categories, products as defaultProducts } from '../data/catalog.js'
-import { toDisplayImageUrl } from '../utils/driveImage.js'
+import { toDisplayImageUrl, toDisplayImageUrls } from '../utils/driveImage.js'
 import { CatalogContext } from './catalogContext.js'
 
 const PRODUCT_STORAGE_KEY = 'nana-xinh-custom-products'
@@ -78,15 +78,21 @@ export function CatalogProvider({ children }) {
   }
 
   function addAdvertisement(input) {
-    const advertisement = {
-      id: Date.now(),
-      title: input.title.trim(),
-      imageUrl: toDisplayImageUrl(input.imageUrl.trim()),
-      linkUrl: input.linkUrl.trim(),
+    const createdAt = Date.now()
+    const imageUrls = toDisplayImageUrls(input.imageUrl)
+    if (imageUrls.length === 0) {
+      return []
     }
 
-    saveAdvertisements([...advertisements, advertisement])
-    return advertisement
+    const nextAdvertisements = imageUrls.map((imageUrl, index) => ({
+      id: `${createdAt}-${index}`,
+      title: input.title.trim(),
+      imageUrl,
+      linkUrl: input.linkUrl.trim(),
+    }))
+
+    saveAdvertisements([...advertisements, ...nextAdvertisements])
+    return nextAdvertisements
   }
 
   function removeAdvertisement(advertisementId) {

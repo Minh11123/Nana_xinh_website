@@ -15,3 +15,10 @@ export function toDisplayImageUrl(url) {
     ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`
     : url
 }
+
+export function toDisplayImageUrls(input) {
+  return input
+    .split(',')
+    .map((url) => toDisplayImageUrl(url.trim()))
+    .filter(Boolean)
+}

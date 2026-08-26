@@ -1,18 +1,48 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export function AdvertisingCarousel({ advertisements }) {
+  const [activeIndex, setActiveIndex] = useState(0)
   const trackRef = useRef(null)
 
-  if (advertisements.length === 0) {
-    return null
+  function scrollToIndex(index) {
+    const track = trackRef.current
+    const slide = track?.children[index]
+
+    if (!track || !slide) {
+      return
+    }
+
+    track.scrollTo({
+      left: slide.offsetLeft - track.offsetLeft,
+      behavior: 'smooth',
+    })
   }
 
   function scroll(direction) {
-    trackRef.current?.scrollBy({
-      left: direction * trackRef.current.clientWidth,
-      behavior: 'smooth',
-    })
+    const nextIndex = (activeIndex + direction + advertisements.length) % advertisements.length
+    setActiveIndex(nextIndex)
+    scrollToIndex(nextIndex)
+  }
+
+  useEffect(() => {
+    if (advertisements.length <= 1) {
+      return undefined
+    }
+
+    const interval = window.setInterval(() => {
+      setActiveIndex((currentIndex) => {
+        const nextIndex = (currentIndex + 1) % advertisements.length
+        scrollToIndex(nextIndex)
+        return nextIndex
+      })
+    }, 4000)
+
+    return () => window.clearInterval(interval)
+  }, [advertisements.length])
+
+  if (advertisements.length === 0) {
+    return null
   }
 
   return (

@@ -1,7 +1,0 @@
-spring:
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/nana_xinh}
-    username: ${DB_USERNAME:nana}
-    password: ${DB_PASSWORD:nana}
-  jpa:
-    show-sql: true

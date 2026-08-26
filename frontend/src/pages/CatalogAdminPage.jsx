@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCatalog } from '../context/catalogContext.js'
 import { formatCurrency } from '../utils/currency.js'
-import { toDisplayImageUrl } from '../utils/driveImage.js'
+import { toDisplayImageUrl, toDisplayImageUrls } from '../utils/driveImage.js'
 
 const initialForm = {
   name: '',
@@ -36,7 +36,7 @@ export function CatalogAdminPage() {
   const [message, setMessage] = useState('')
   const [advertisementMessage, setAdvertisementMessage] = useState('')
   const previewUrl = toDisplayImageUrl(form.imageUrl.trim())
-  const advertisementPreviewUrl = toDisplayImageUrl(advertisementForm.imageUrl.trim())
+  const advertisementPreviewUrls = toDisplayImageUrls(advertisementForm.imageUrl)
 
   function updateField(event) {
     const { checked, name, type, value } = event.target
@@ -64,9 +64,14 @@ export function CatalogAdminPage() {
 
   function handleAdvertisementSubmit(event) {
     event.preventDefault()
-    const advertisement = addAdvertisement(advertisementForm)
+    const addedAdvertisements = addAdvertisement(advertisementForm)
+    if (addedAdvertisements.length === 0) {
+      setAdvertisementMessage('Vui lòng nhập ít nhất một link ảnh banner.')
+      return
+    }
+
     setAdvertisementForm(initialAdvertisementForm)
-    setAdvertisementMessage(`Đã thêm banner${advertisement.title ? ` “${advertisement.title}”` : ''} vào trang chủ.`)
+    setAdvertisementMessage(`Đã thêm ${addedAdvertisements.length} banner vào trang chủ.`)
   }
 
   return (
@@ -199,11 +204,11 @@ export function CatalogAdminPage() {
           </label>
 
           <label>Link ảnh Google Drive
-            <input
+            <textarea
               name="imageUrl"
-              placeholder="https://drive.google.com/file/d/.../view"
+              placeholder="https://drive.google.com/file/d/.../view, https://drive.google.com/file/d/.../view"
               required
-              type="url"
+              rows="3"
               value={advertisementForm.imageUrl}
               onChange={updateAdvertisementField}
             />
@@ -219,10 +224,14 @@ export function CatalogAdminPage() {
             />
           </label>
 
-          {advertisementPreviewUrl && (
-            <div className="catalog-ad-preview">
-              <img src={advertisementPreviewUrl} alt="Xem trước banner quảng cáo" />
-              <span>Xem trước banner</span>
+          {advertisementPreviewUrls.length > 0 && (
+            <div className="catalog-ad-preview-list">
+              {advertisementPreviewUrls.map((previewUrl, index) => (
+                <div className="catalog-ad-preview" key={`${previewUrl}-${index}`}>
+                  <img src={previewUrl} alt={`Xem trước banner quảng cáo ${index + 1}`} />
+                  <span>Banner {index + 1}</span>
+                </div>
+              ))}
             </div>
           )}
 
