@@ -1,49 +1,37 @@
-# Tiệm hoa Nana Xinh
+# Nana Xinh — frontend-only
 
-Monorepo cho website Tiệm hoa Nana Xinh.
+Website bán hoa chạy hoàn toàn ở frontend (React + Vite). Không cần backend, database hay tài khoản admin.
 
-## Stack
+## Cập nhật sản phẩm và ảnh
 
-- Frontend: ReactJS, Vite, JavaScript, React Router
-- Backend: Java 21, Spring Boot, Spring Data JPA
-- Database: PostgreSQL, Flyway
-- Deploy: Docker Compose, Nginx serve frontend và reverse proxy `/api`
+Toàn bộ danh mục/sản phẩm nằm trong `src/data/catalog.js`.
 
-## Chạy frontend local
+1. Tải ảnh lên Google Drive.
+2. Chọn **Chia sẻ → Quyền truy cập chung → Bất kỳ ai có đường liên kết**.
+3. Sao chép link dạng `https://drive.google.com/file/d/FILE_ID/view?usp=sharing`.
+4. Dán link vào trường `imageUrl` của sản phẩm hoặc danh mục.
+
+Website tự chuyển link chia sẻ Drive thành link hiển thị ảnh. Có thể tiếp tục dùng ảnh trong `public/images` bằng đường dẫn `/images/ten-anh.jpg`.
+
+Thông tin cửa hàng/Zalo nằm trong `src/data/store.js`.
+
+## Trang quản trị ẩn
+
+Mở `/nana-xinh-quan-ly` để thêm sản phẩm và banner quảng cáo cuộn bằng link ảnh Google Drive. Route này không xuất hiện trên menu. Nội dung thêm từ trang quản trị được lưu trong `localStorage`, nên chỉ hiển thị trên đúng trình duyệt/thiết bị đã thêm và không đồng bộ cho khách ở thiết bị khác.
+
+## Đặt hàng
+
+Giỏ hoa được lưu bằng `localStorage` trên trình duyệt. Trang đặt hàng tạo nội dung đơn, sao chép vào clipboard và mở Zalo để khách gửi trực tiếp cho tiệm. Website không thu thập hoặc lưu thông tin khách hàng.
+
+## Chạy dự án
 
 ```bash
-npm --prefix frontend install
-npm run dev:frontend
+npm install
+npm run dev
 ```
 
-Frontend dùng Node `>=26`.
-
-## Chạy production bằng Docker Compose
+Kiểm tra bản production:
 
 ```bash
-copy .env.example .env
-docker compose up --build
+npm run build
 ```
-
-Ứng dụng sẽ chạy qua Nginx tại `http://localhost`, API đi qua `http://localhost/api`.
-
-## Auth admin
-
-Backend có JWT auth cho tài khoản quản trị:
-
-- `POST /api/auth/login`
-- `POST /api/auth/logout`
-- `POST /api/auth/forgot-password`
-- `POST /api/auth/reset-password`
-
-Admin mặc định được tạo lần đầu bằng biến môi trường:
-
-- `ADMIN_EMAIL`
-- `ADMIN_PASSWORD`
-- `ADMIN_NAME`
-
-Frontend login dev mặc định dùng `admin@nanaxinh.vn` / `admin123`. Khi backend chạy, frontend sẽ gọi API thật qua `/api`; nếu backend chưa bật, login mock vẫn giúp mở dashboard để tiếp tục làm giao diện.
-
-## Ghi chú local
-
-Máy hiện tại có Node `v26.7.0`. Backend được cấu hình Java 21 và có thể build qua Docker image Maven/Temurin 21; nếu muốn chạy backend trực tiếp bằng `mvn`, cần cài JDK 21 và Maven.
