@@ -1,0 +1,6 @@
+{
+  "name": "Nana Xinh - Tiệm Hoa Tươi Cao Cấp",
+  "description": "Ứng dụng đặt hoa tươi cao cấp Nana Xinh với thiết kế tinh tế, giao hoa trong ngày và tư vấn thiệp hoa ý nghĩa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
